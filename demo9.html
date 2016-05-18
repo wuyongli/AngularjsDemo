@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS 事件</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	[1]ng-click 指令定义了 AngularJS 点击事件。<br/>
+	<p ng-click="number=number+1" style="width:40px;height:40px;background-color:red;border-radius:20px;line-height:40px;text-align:center;cursor:pointer;">{{number}}</p>
+
+	<p ng-click="toggle()" style="width:80px;height:80px;background-color:#ccc;border-radius:40px;line-height:80px;text-align:center;cursor:pointer;">显示/隐藏</p>
+	<h1 ng-hide="myVar">为了部落！</h1>
+	<script>
+	var app=angular.module('myApp',[]);
+	app.controller('myControl',function($scope){
+		$scope.number=0;
+
+		$scope.myVar=false;
+		$scope.toggle=function(){
+			$scope.myVar=!$scope.myVar;
+		};
+	});
+	</script>
+</body>
+</html>

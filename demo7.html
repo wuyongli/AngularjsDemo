@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS表格</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	<table>
+		<thead>个人信息</thead>
+		<tr><td>序号</td><td>姓名</td><td>年龄</td></tr>
+		<tr ng-repeat="x in infos|orderBy:'age'">
+			<td>{{$index+1}}</td>
+			<td>{{x.name}}</td>
+			<td>{{x.age}}</td>
+		</tr>
+	</table>
+	<script>
+	var app=angular.module('myApp',[]);
+	app.controller('myControl',function($scope){
+		$scope.infos=[{name:"aa",age:12},{name:"bb",age:11},{name:"cc",age:15}]
+	});
+	</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS指令实践</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	<input ng-model="color" placeholder="输入颜色代码"/>
+	1<hello-world></hello-world>
+	2<hello-wuhan></hello-wuhan>
+	3<hello-beijing></hello-beijing>
+	4<hello-xian></hello-xian>
+	5<hello-hangzhou color-attr={{color}}></hello-hangzhou>
+	<!-- <hello-hangzhou color={{color}}>更简单的绑定方式</hello-hangzhou> -->
+	6<hello-guangzhou color="color"></hello-guangzhou>
+	<!-- 7<say-hello sayHelloDemo="sayHello()" ng-bind="theString"></say-hello> -->
+
+	8<output-text1>
+		<p>Transclusion（嵌入1){{demo}}</p>
+	9</output-text1>
+	<output-text2>
+		<p>Transclusion（嵌入2){{demo}}</p>
+	</output-text2>
+
+
+	10<outer-directive message='message'>
+		<inner-directive>{{message}}</inner-directive>
+	</outer-directive>
+	<script>
+	var app=angular.module('myApp',[]);
+	//控制
+	app.controller('myControl',function($scope){
+		// $scope.color='#ccc';
+		$scope.sayHello=function(){
+			$scope.theString="hello 个 gui...";
+		}
+		$scope.demo="demo8";
+	});
+	
+	//自定义指令
+	// link函数主要用来为DOM元素添加事件监听、监视模型属性变化、以及更新DOM
+	//demo1
+	app.directive("helloWorld",function(){
+		return {
+			restrict:"AE",
+			replace:true,
+			template:'<p style="background:{{color}}">Hello World(点击颜色还原)</p>',
+			link:function(scope,elem,attrs){
+				elem.bind('click',function(){
+					elem.css('background','white');
+					scope.$apply(function(){
+						scope.color="white";
+					});
+				});
+				elem.bind('mouseover',function(){
+					elem.css('cursor','pointer');
+				});
+			}
+		}
+	});
+/*    restrict – 这个属性用来指定指令在HTML中如何使用（还记得之前说的，指令的四种表示方式吗）。在上面的例子中，我们使用了 ‘AE’。所以这个指令可以被当作新的HTML元素或者属性来使用。如果要允许指令被当作class来使用，我们将 restrict 设置成 ‘AEC’。
+    template – 这个属性规定了指令被Angular编译和链接（link）后生成的HTML标记。这个属性值不一定要是简单的字符串。template 可以非常复杂，而且经常包含其他的指令，以及表达式({{ }})等。更多的情况下你可能会见到 templateUrl， 而不是 template。所以，理想情况下，你应该将模板放到一个特定的HTML文件中，然后将 templateUrl 属性指向它。
+    replace – 这个属性指明生成的HTML内容是否会替换掉定义此指令的HTML元素。在我们的例子中，我们用 <hello-world></hello-world>的方式使用我们的指令，并且将 replace 设置成 true。所以，在指令被编译之后，生成的模板内容替换掉了 <hello-world></hello-world>。最终的输出是 <h3>Hello World!!</h3>。如果你将 replace 设置成 false，也就是默认值，那么生成的模板会被插入到定义指令的元素中。
+*/
+	
+	//demo2
+	app.directive('helloWuhan',function(){
+		return{
+			restrict:'AE',
+			replace:true,
+			template:'<h3>你好，武汉!(移入变色)</h3>',
+			compile:function(tElem,attrs){
+				return function(scope,elem,attrs){
+					elem.bind('mouseover',function(){
+						elem.css('cursor','pointer');
+						elem.css('color','{{color}}');
+						// scope.$apply(function(){
+						// 	scope.color="red";
+						// });
+					});
+				};
+			}
+		};
+	});
+	/*compile 函数在 link 函数被执行之前用来做一些DOM改造。它接收下面的参数：
+
+    tElement – 指令所在的元素
+    attrs – 元素上赋予的参数的标准化列表
+
+	要注意的是 compile 函数不能访问 scope，并且必须返回一个 link 函数。但是如果没有设置 compile 函数，你可以正常地配置 link 函数，（有了compile，就不能用link，link函数由compile返回）。
+
+	*/
+
+	//demo3
+	app.directive('helloBeijing',function(){
+		return {
+			scope:true,
+			restrict:"AE",
+			replace:true,
+			template:'<p style="background:{{color}}">你好，北京！(点击颜色还原)</p>',
+			link:function(scope,elem,attrs){
+				elem.bind('click',function(){
+					// elem.css('background','white');
+					scope.$apply(function(){
+						scope.color="white";
+					});
+				});
+				elem.bind('mouseover',function(){
+					elem.css('cursor','pointer');
+				});
+			}
+		}
+	});
+	/*与demo1相比，设置scope:true,在指令内部设置一个子scope，这个scope原型继承自父scope，
+		子scope的初始值等于父scope，随着父scope改变而改变；
+		当在当前指令内部设置子scope的值后（本案例中是点击事件，设置scope.color="white";），
+		子scope不再随着父scope而改变。
+		[子scope的改变不会改变父scope]
+	*/
+
+	//demo4
+	app.directive('helloXian',function(){
+		return {
+			scope:{},
+			restrict:"AE",
+			replace:true,
+			template:'<p style="background:{{color}}">你好，西安!</p>',
+			link:function(scope,elem,attrs){
+				elem.bind('click',function(){
+					scope.$apply(function(){
+						scope.color="blue";
+					});
+				});
+				elem.bind('mouseover',function(){
+					elem.css('cursor','pointer');
+				});
+			}
+		}
+	});
+	/*与demo1相比，设置scope:{},一个隔离的scope，一个孤立存在不继承自父scope的scope。
+	不会随着父scope改变，也不会改变父scope。
+	*/
+
+	//demo5
+	app.directive('helloHangzhou',function(){
+		return {
+			scope:{
+				color: '@colorAttr' /* 更简单的绑定方式，color:'@'   */
+			},
+			restrict:"AE",
+			replace:true,
+			template:'<p style="background:{{color}}">你好，杭州！(点击颜色还原)</p>',
+			link:function(scope,elem,attrs){
+				elem.bind('click',function(){
+					// elem.css('background','white');
+					scope.$apply(function(){
+						scope.color="white";
+					});
+				});
+				elem.bind('mouseover',function(){
+					elem.css('cursor','pointer');
+				});
+			}
+		}
+	});
+	/*与demo4相比，使用 @ 实现单向[文本]绑定【只能传递字符串】。我们指定了隔离scope中的属性 color 绑定到指令所在HTML元素上的参数 colorAttr。在HTML标记中，你可以看到 {{color}}表达式被指定给了 color-attr 参数。当controller中的color(即父scope的color)值发生改变时，color-attr 参数也跟着改变。隔离scope中的 color 属性的值也相应地被改变。但是隔离scope中的 color 属性的值改变时，fuscope的color不会发生改变。
+			【可以想象为：隔离scope.color=color-attr=父scope.color
+			即后面赋值给前面，前面随着后面变化而变化，但前面变化不会影响到后面。】
+	与demo3相比，当在当前指令内部设置隔离scope的值后（本案例中是点击事件，设置
+	scope.color="white";），隔离scope仍然随着父scope而改变。
+
+	【当隔离scope属性和指令元素参数的名字一样是，你可以更简单的方式设置scope绑定：
+		指令内部color:'@' ，对应html中color={{color}}  】
+	*/
+
+	//demo6
+	app.directive('helloGuangzhou',function(){
+		return {
+			scope:{
+				color: '='
+			},
+			restrict:"AE",
+			replace:true,
+			template:'<p style="background:{{color}}">你好，广州！(点击颜色还原)</p>',
+			link:function(scope,elem,attrs){
+				elem.bind('click',function(){
+					// elem.css('background','white');
+					scope.$apply(function(){
+						scope.color="white";
+					});
+				});
+				elem.bind('mouseover',function(){
+					elem.css('cursor','pointer');
+				});
+			}
+		}
+	});
+	/*使用‘=’实现双向绑定，与 @ 不同，这种方式让你能够给属性指定一个真实的scope数据模型，而不是简单的字符串。这样你就可以传递简单的字符串、数组、甚至复杂的对象给隔离scope。同时，还支持双向的绑定。每当父scope属性变化时，相对应的隔离scope中的属性也跟着改变，反之亦然。和之前的一样，你也可以监视这个scope属性的变化。
+	【父scope改变，隔离scope随之改变；隔离scope改变，父scope也随之改变】
+	*/
+
+	//demo7【未完...】
+	app.directive('sayHello',function(){
+		return {
+			scope:{
+				sayHelloDemo:'&amp;'
+			},
+			restrict:"AE",
+			replace:true,
+			template:'<p>Hello！Hello!</p>'
+		};
+	});
+
+	//demo8
+	//transclude:true
+	app.directive('outputText1',function(){
+		return{
+			restrict:"AE",
+			// replace:false,
+			transclude:true,
+			template:'<div ng-transclude></div>'
+		};
+	})
+	/*ng-transclude 指明在哪里放置被嵌入的内容。即该自定义指令中的DOM内容放置在<div ng-transclude></div>中，如果replace：false，则div外层为<output-text></output-text>
+	*/
+
+	//demo9
+	//transclude:'element'
+	app.directive('outputText2',function(){
+		return{
+			restrict:"AE",
+			replace:false,
+			transclude:'element',
+			template:'<div ng-transclude></div>'
+		};
+	});
+	/*与demo8相比，transclude:'element'，replace:true,将指令元素本身嵌入<div ng-transclude></div>中,即结构为<div ng-transclude><output-text>...</output-text></div>中。
+	注意，如果replace:false,那么指令模板本质上是被添加到了注释的innerHTML中——也就是说其实什么都没有发生
+	*/
+
+
+	//demo10
+	app.directive('outerDirective',function(){
+		return{
+			scope:{
+				message:'='
+			},
+			restrict:'AE',
+			controller:function($scope,$http,$compile){
+				this.addChild=function(nextDirective){
+					console.log('get the message form nextDirective:'+nextDirective.message);
+				};
+			}
+
+		};
+	});
+
+	app.directive('innerDirective',function(){
+		return{
+			scope:{},
+			restrict:'AE',
+			require:'^outerDirective',
+			link:function(scope,elem,attrs,controllerInstance){
+				scope.message="指令交互...";
+				controllerInstance.addChild(scope);
+			}
+		};
+	});
+	</script>
+</body>
+</html>

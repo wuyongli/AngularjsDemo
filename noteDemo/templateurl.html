@@ -1,0 +1,9 @@
+
+    <ul>
+      <li ng-repeat="note in notes">
+        <a href="#">{{note.title}}</a>
+      </li>
+    </ul>
+
+<textarea ng-model="noteText"></textarea>
+<span ng-click="save()">SAVE</span>

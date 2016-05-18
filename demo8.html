@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS HTML DOM</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	AngularJS 为 HTML DOM 元素的属性提供了绑定应用数据的指令。<br/>
+	[1]ng-disabled 指令直接绑定应用程序数据到 HTML 的 disabled 属性。<br/>
+	<p>
+	<button ng-disabled="mySwitch">点我!</button>
+	</p>
+	<!-- 将选择框checkbox的值绑定到mySwitch,mySwitch值决定了button的disabled属性 -->
+	<p>
+	<input type="checkbox" ng-model="mySwitch">按钮是否禁用
+	</p>
+	<p>
+	{{ mySwitch }}
+	</p>
+
+	[2]ng-show 指令根据 value 的值来显示（隐藏）HTML 元素。
+	<p ng-show="true">我是可见的</p>
+	<p ng-show="false">我是不可见的</p>
+	<p ng-show="no>12">我是可见的</p>     <!--  no>12为真时可见 -->
+
+	[3]ng-hide 指令用于隐藏或显示 HTML 元素。
+	<p ng-hide="true">你看不见我</p>
+	<p ng-hide="false">让你看一下好啦</p>
+
+	<script>
+	var app=angular.module('myApp',[]);
+	app.controller('myControl',function($scope){
+		$scope.no=13;
+	});
+	</script>
+</body>
+</html>

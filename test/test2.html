@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html ng-app="btst" ng-controller="myControl">
+<head>
+	<title>AngularJS XMLHttpRequest</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	<h3>BootStrap手风琴指令</h3>
+
+    <btst-accordion>
+        <btst-pane title="<b>基本功能</b>" category="{name:'test'}">
+            <div>AngularJS......</div>
+        </btst-pane>
+        <btst-pane title="<b>创建自定义指令</b>">
+            <div>使用过 AngularJS ......</div>
+        </btst-pane>
+        <btst-pane title="<b>体验实例</b>">
+            <div>之前我们已经介绍了所有的AngularJS......</div>
+        </btst-pane>
+    </btst-accordion>
+	<script>
+	var btst = angular.module("btst", []);
+btst.directive("btstAccordion", function () {
+  return {
+    restrict: "E",        
+    transclude: true,      
+    replace: true,        
+    scope: {},            
+    template:             
+      "<div class='accordion' ng-transclude></div>",
+    link: function (scope, element, attrs) {
+
+      // 确保 accordion拥有id
+      var id = element.attr("id");
+      if (!id) {
+        id = "btst-acc" + scope.$id;
+        element.attr("id", id);
+      }
+
+      // set data-parent and href attributes on accordion-toggle elements
+      var arr = element.find(".accordion-toggle");
+      for (var i = 0; i < arr.length; i++) {
+        $(arr[i]).attr("data-parent", "#" + id);
+        $(arr[i]).attr("href", "#" + id + "collapse" + i);
+      }
+
+      // set collapse attribute on accordion-body elements 
+      // and expand the first pane to start
+      arr = element.find(".accordion-body");
+      $(arr[0]).addClass("in"); // expand first pane
+      for (var i = 0; i < arr.length; i++) {
+        $(arr[i]).attr("id", id + "collapse" + i);
+      }
+    },
+    controller: function () {}
+  };
+});
+
+btst.directive('btstPane', function () {
+  return {
+    require: "^btstAccordion",
+    restrict: "E",
+    transclude: true,
+    replace: true,
+    scope: {
+      title: "@"
+    },
+    template:
+      "<div class='accordion-group'>" +
+      "  <div class='accordion-heading'>" +
+      "    <a class='accordion-toggle' data-toggle='collapse'>{{title}}</a>" +
+      "  </div>" +
+      "<div class='accordion-body collapse'>" +
+      "  <div class='accordion-inner' ng-transclude></div>" +
+      "  </div>" +
+      "</div>",
+    link: function (scope, element, attrs) {
+      scope.$watch("title", function () {
+        // NOTE: this requires jQuery (jQLite won't do html)
+        var hdr = element.find(".accordion-toggle");
+        hdr.html(scope.title);
+      });
+    }
+  };
+});
+	</script>
+</body>
+</html>

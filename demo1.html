@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS指令和模型</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	当网页加载完毕，AngularJS 自动开启。<br/>
+
+	ng-app 指令告诉 AngularJS，哪个元素是 AngularJS 应用程序 的"所有者"，一般写在body或html标签上。<br/>
+
+	ng-model 指令把输入域的值绑定到应用程序变量 name。<br/>
+
+	ng-bind 指令把应用程序变量 name 绑定到某个段落的 innerHTML。<br/>
+	<div>
+		<p>姓名：<input type="text" ng-model="name" placeholder="请输入..."></p>
+		<!--数据双向绑定 以下两行代码异曲同工 -->
+		<h1>hello {{name}}</h1>
+		<h1 ng-bind="name"></h1>
+	</div>
+
+
+	<div>
+		姓：<input type="text" ng-model="firstName" placeholder="请输入姓..."><br/>
+		名：<input type="text" ng-model="lastName" placeholder="请输入名..."><br/>
+		出生日期：<input type="text" ng-model="borthYear" placeholder="请输入出生日期..."><br/>
+		姓名：{{firstName+" "+lastName}} 	<br/> 	<!-- 字符串 -->
+		年龄：{{nowYear-borthYear}}      	<br/> 	<!-- 数字 -->
+		姓：{{person.firstName}}			<br/>	<!-- 对象 -->
+		班级：{{classNo[2]}}          		<br/> 	<!-- 数组 -->
+
+		<!-- 重复html元素 -->
+		喜欢的水果：
+		<ul>
+			<li ng-repeat="x in fruits">
+				{{x}}
+			</li>
+		</ul>
+
+		<!-- 创建自定义的指令 -->
+		你可以使用 .directive 函数来添加自定义的指令。<br/>
+
+		要调用自定义指令，HTMl 元素上需要添加自定义指令名。<br/>
+
+		使用驼峰法来命名一个指令，如：runoobDirective, 但在使用它时需要以 - 分割, 如：runoob-directive:<br/>
+		<div my-dream></div my-dream>  		<!-- 属性名使用 -->
+		<div class="my-dream"></div>		<!-- 类名使用 -->
+	</div>
+	<script>
+	var app=angular.module('myApp',[]);
+	app.controller('myControl',function($scope){
+		// 初始化数据
+		$scope.borthYear=2000;
+		$scope.nowYear=2016;
+		$scope.person={firstName:"吴",lastName:"小丽"};
+
+		$scope.classNo=["一班","二班","三班","四班"];
+
+		$scope.fruits=["西瓜","香蕉","菠萝"];
+	});
+	
+	// 自定义指令
+	app.directive('myDream',function(){
+		return{
+			// restrict 默认值为 EA, 即可以通过元素名和属性名来调用指令。
+			// 		    E 只限元素名使用
+			// 		    A 只限属性使用
+			// 		    C 只限类名使用
+			// 		    M 只限注释使用
+
+			restrict : "CA",//限类名和属性名使用
+			template :"<h1>我们的愿望是星辰和大海！！！</h1>"
+		}
+	});
+	</script>
+</body>
+</html>

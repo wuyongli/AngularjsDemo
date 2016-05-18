@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>AngularJS XMLHttpRequest</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+	<!-- <link rel="stylesheet" type="text/css" href="style.css"> -->
+</head>
+<body ng-app="myNoteApp">
+	<my-notes>
+	<!-- <h1>My Notes</h1>
+	<div>
+		<ul>
+			<li ng-repeat="x in notes" ng-click="edit()">
+				<span ng-bind="x.title"></span><span ng-bind='x.time'></span>
+			</li>
+		</ul>
+		<button>添加</button>
+		<div>
+			<textarea ng-model="noteText"></textarea>
+			<button ng-click="save()">保存</button> <button ng-click="del()">保存</button>
+		</div>
+	</div> -->
+	
+	</my-notes>
+
+
+	<script>
+	// localStorage.clear(); //清除本地存储
+	var app=angular.module('myNoteApp',[]);
+	app.factory("noteFactory",function(){
+		var factory={};
+		factory.put=function(note){
+			localStorage.setItem('note'+note.id,JSON.stringify(note));
+			return this.getAll();
+		}
+		factory.get=function(index){
+			var note=localStorage.getItem('note'+index);
+			return JSON.parse(note);
+		}
+		factory.getAll=function(){
+			var notes=[];
+			for(var i=0;i<localStorage.length;i++){
+				if(localStorage.key(i).indexOf('note')!==-1){
+					var note=localStorage.getItem(localStorage.key(i));
+					notes.push(JSON.parse(note));
+				}
+			}
+			return notes;
+		}
+		factory.remove=function(index){
+			localStorage.removeItem('note',+index);
+			return this.getAll();
+		}
+		factory.modify=function(index,note){
+			this.remove(index);
+			this.put();
+		}
+		return factory;
+	})
+	app.directive("myNotes",function(noteFactory){
+		return{
+			restrict:"AE",
+			scope:{},
+
+			link:function(scope,elem,attrs){
+				scope.notes=[];
+				scope.editModul=false;
+				scope.index=0;
+				
+
+
+				//初始化
+				scope.restore=function(){
+					scope.editModul=false;
+					scope.id=-1;
+					scope.noteText='';
+				}
+				//保存
+				scope.save=function(){
+					if(scope.noteText!==''&&scope.noteText!==undefined){
+						var note={};
+						note.id=scope.id;
+						note.title = scope.noteText.length > 10 ? scope.noteText.substring(0, 10) + '. . .' : scope.noteText;
+						note.content=scope.noteText;console.log(scope.noteText);console.log(scope.id);
+						note.time=new Date().toLocaleString();
+						if(note.id==-1){   //为新增
+							note.id=scope.index;console.log(scope.id);
+							scope.notes=noteFactory.put(note);
+							scope.index++;
+						}
+						if(note.id>=0){   //为修改
+							scope.notes=noteFactory.modify(note.id,note);console.log(scope.id);
+						}
+						console.log(scope.notes);
+					}
+					scope.restore();
+				}
+				//编辑
+				scope.edit=function(){
+					var note=noteFactory.get(scope.id);
+					scope.id=note.id;
+					scope.noteText=note.content;
+				}
+				//删除
+				scope.del=function(){
+					noteFactory.remove(scope.id);
+					scope.noteText='';
+				}
+
+				//执行初始化方法
+				scope.restore();
+			},
+			template:
+					'<h1>My Notes</h1><div><ul><li ng-repeat="x in notes" ng-click="edit()"><span ng-bind="x.title"></span><span ng-bind="x.time"></span></li></ul><button>添加</button><div><textarea ng-model="noteText"></textarea><button ng-click="save()">保存</button> <button ng-click="del()">删除</button></div></div>'
+		};
+	});
+	</script>
+</body>
+</html>

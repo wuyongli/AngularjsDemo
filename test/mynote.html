@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>案例-备忘录</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	<h1>我的备忘录</h1>
+	<form ng-submit="add()">
+		<input type="text"  placeholder="新增" ng-model="info">
+		<input type="submit" value="新增">
+	</form>
+	<ul style="list-style:none;">
+		<li ng-repeat="x in note">
+			<input type="checkbox" ng-model="x.done"><span ng-bind="x.text"></span>
+		</li>
+	</ul>
+	<p><button ng-click="remove()">删除记录</button></p>
+	<script>
+	var app=angular.module('myApp',[]);
+	app.controller('myControl',function($scope){
+		$scope.note=[{text:"news1",done:"false"}];
+		$scope.i=1;
+		$scope.add=function(){
+			$scope.info="新建备忘录"+$scope.i;
+			$scope.note.push({text:$scope.info,done:"false"});
+			$scope.info="";
+			$scope.i++;
+		}
+		$scope.remove=function(){
+			var notes=$scope.note;
+			$scope.note=[];
+			angular.forEach(notes,function(x){
+				if(x.done==="false")
+					{$scope.note.push(x);}
+			});
+		};
+	});
+	</script>
+</body>
+</html>

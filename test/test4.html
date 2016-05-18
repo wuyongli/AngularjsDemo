@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS自定义指令(使用HTML5本地存储)</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	<my-fruits>
+	</my-fruits>
+	{{fruits}}  <!-- scope:{}时失效 -->
+	<script>
+	localStorage.clear(); //清楚本地存储
+	if(typeof(Storage)!=="undefined")
+	var app=angular.module('myApp',[]);
+	//控制
+	app.controller('myControl',function($scope){
+		$scope.msg="my first demo!";
+	});
+	
+	//自定义指令
+	app.directive("myFruits",function(){
+		 return {
+		    restrict : "AE",
+		    scope:{},
+		   link: function(scope, elem, attrs) {
+		      scope.fruits=[{done:false,id:0,name:"aa"},{done:false,id:1,name:"bb"},{done:false,id:2,name:"cc"}];
+		      scope.index=2;
+		      for(var i=0;i<3;i++){
+		      	localStorage.setItem('id' + scope.fruits[i].id, JSON.stringify(scope.fruits[i]));
+		      }
+		      scope.add=function(){
+		      	 	var fruit={};
+		      	 	scope.index++;
+		      	 	fruit.done=false;
+		      	 	fruit.id=scope.index;
+		      	 	fruit.name=scope.addFruit;
+		      	 	localStorage.setItem('id' +fruit.id, JSON.stringify(fruit));
+		      	 	console.log(scope.index);
+					return this.getAll();
+		      	};
+		      scope.get=function(index){
+		      	return JSON.parse(localStorage.getItem('id' + index));
+		      };
+		      scope.getAll=function(){
+		      	scope.fruits=[];
+		      	for (var i = 0; i < localStorage.length; i++) {
+			        if (localStorage.key(i).indexOf('id') !== -1) {
+			          var fruit = localStorage.getItem(localStorage.key(i));
+			          scope.fruits.push(JSON.parse(fruit));
+			        }
+
+      			}
+		      };
+		     scope.remove=function(){
+      			for(var i=0;i<scope.fruits.length;i++){
+      				if(scope.fruits[i].done==true){
+      					console.log(scope.fruits[i].id);
+      					localStorage.removeItem(localStorage.key(i));
+      				}
+      			}
+      			return this.getAll();
+		     };
+		   },
+		  template: '<input ng-model="addFruit"/> <button ng-click="add()">添加</button><ul><li ng-repeat="x in fruits"> <input type="checkbox" ng-model="x.done"/>{{x.id+"--"+x.name}}</li></ul><button ng-click="remove()">删除</button>'  //引号中间html换行会报错
+		  // templateUrl:'templateurl.html'  //存在跨域问题，报错
+		  };
+	});
+
+/*JSON.parse()	用于将一个 JSON 字符串转换为 JavaScript 对象。
+JSON.stringify()	用于将 JavaScript 值转换为 JSON 字符串。*/
+
+/*HTML5 的本地存储 API 中的 localStorage 与 sessionStorage 在使用方法上是相同的，区别在于 sessionStorage 在关闭页面后即被清空，而 localStorage 则会一直保存。采用键值对存储，key/value。
+检测浏览器是否支持：if(typeof(Storage)!=="undefined")
+  {
+  alert("yes");
+  }
+else
+  {
+  alert("sorry");
+  }
+使用方法：
+	【1】设置数据
+		localStorage.setItem(key,value);
+	【2】获取数据
+		localStorage.getItem(key);
+	【3】删除数据
+		localStorage.removeItem(key)
+	【4】清空全部数据
+		localStorage.clear(); 
+	【5】获取本地存储数据数量
+		localStorage.length
+	【6】获取第 N 个数据的 key 键值
+		localStorage.key(N)
+
+*/
+	</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS Select</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	AngularJS Select(选择框)<br/>
+
+	AngularJS 可以使用数组或对象创建一个下拉列表选项。<br/>
+
+	ng-options 与 ng-repeat<br/>
+	ng-repeat 指令是通过数组来循环 HTML 代码来创建下拉列表，但 ng-options 指令更适合创建下拉列表，它有以下优势：<br/>
+	使用 ng-options 的选项的一个对象， ng-repeat 是一个字符串。
+
+	<br/>
+	[1]以数组为数据源
+	<select ng-model="selectedSite" ng-options="x.site for x in sites">
+	</select>
+	<h1>你选择的是: {{selectedSite.site}}</h1>
+	<p>网址为: {{selectedSite.url}}</p>
+	[2]以数据对象为数据源,value值为String
+	<select ng-model="selectedSite2" ng-options="x for (x,y) in sites2">
+	</select>
+	<!-- 显示选择项为x，选择的值为 key-value 对中的 value即y -->
+	<h1>你选择的是: {{selectedSite2}}</h1>
+	[3]以数据对象为数据源,value值为对象
+	<select ng-model="selectedCar" ng-options="y.brand for (x, y) in cars">
+	</select>
+	<h1>你选择的是: {{selectedCar.brand}}</h1>
+	<h2>模型: {{selectedCar.model}}</h2>
+	<h3>颜色: {{selectedCar.color}}</h3>
+
+	<script>
+	var app=angular.module('myApp',[]);
+	app.controller('myControl',function($scope){
+		//以数组为数据源
+		$scope.sites = [
+		    {site : "Google", url : "http://www.google.com"},
+		    {site : "Runoob", url : "http://www.runoob.com"},
+		    {site : "Taobao", url : "http://www.taobao.com"}
+		];
+
+		//以数据对象为数据源
+		$scope.sites2 = {
+		    site01 : "Google",
+		    site02 : "Runoob",
+		    site03 : "Taobao"
+		};
+
+		//以数据对象为数据源,value值为对象
+		$scope.cars = {
+			car01 : {brand : "Ford", model : "Mustang", color : "red"},
+			car02 : {brand : "Fiat", model : "500", color : "white"},
+			car03 : {brand : "Volvo", model : "XC90", color : "black"}
+		};
+	});
+	</script>
+</body>
+</html>

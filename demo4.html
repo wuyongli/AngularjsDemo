@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS 服务(Service)</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	在 AngularJS 中，服务是一个函数或对象，可在你的 AngularJS 应用中使用。AngularJS 内建了30 多个服务。<br/>
+	[1]$location 服务，它可以返回当前页面的 URL 地址。
+	<h3>当前页面：{{myUrl}}</h3>
+	[2]AngularJS $timeout 服务对应了 JS window.setTimeout 函数,从当前起多少毫秒后执行第一个参数。
+	<h1>{{theString}}</h1>
+	[3]AngularJS $interval 服务对应了 JS window.setInterval 函数,间隔指定的毫秒数不停地执行指定的代码。
+	<h3>当前时间：{{theTime}}</h3>
+
+	[4]创建自定义服务
+	你的年龄：{{age}}<br/>
+
+	[5]过滤器中使用自定义服务
+	<ul>
+		<li ng-repeat="x in borthYears">
+			{{x|myFormat}}
+		</li>
+	</ul>
+	<script>
+	var app=angular.module('myApp',[]);
+	//创建自定义服务
+	app.service('getAge',function(){
+		this.myAge=function(x){
+			return 2016-x+"岁";
+		}
+	});
+
+	//自定义过滤器
+	app.filter('myFormat',['getAge',function(getAge){
+		return function(x){
+			return getAge.myAge(x);
+		};
+	}])
+
+	app.controller('myControl',function($scope,$location,$timeout,$interval,getAge){
+		$scope.myUrl=$location.absUrl();
+
+		$scope.theString="孩子，你有梦想么？";
+		$timeout(function() {
+			$scope.theString="我的梦想是星辰和大海啊！";
+		}, 3000);//定时3秒
+
+		$scope.theTime=new Date().toLocaleTimeString();
+		$interval(function(){
+			$scope.theTime=new Date().toLocaleTimeString();
+		},1000);
+
+		$scope.age=getAge.myAge(1992);
+
+		$scope.borthYears=[1992,1998,1899];
+
+	});
+	</script>
+</body>
+</html>

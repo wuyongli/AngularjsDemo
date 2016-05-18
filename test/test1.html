@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-controller="myControl">
+<head>
+	<title>AngularJS练习1</title>
+	<meta charset="utf-8">
+	<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+</head>
+<body>
+	<input ng-model="msg"></input>
+	<p to-upper>
+		{{msg|myUpperFilter}}
+	</p>
+	<script>
+	var app=angular.module('myApp',[]);
+	//控制
+	app.controller('myControl',function($scope){
+		$scope.msg="my first demo!";
+	});
+	//过滤
+	app.filter("myUpperFilter",function(){
+		return function(input){
+			return input.toUpperCase();
+		};
+	});
+	//自定义指令
+	app.directive("toUpper",function(){
+		return function(scope,element,attrs){
+			element.bind("mouseenter",function(){
+				element.css("background","red");
+			});
+			element.bind("mouseleave",function(){
+				element.css("background","green");
+			});
+		};
+	});
+
+
+   /* 【1】scope – 指令的scope。在我们的例子中，指令的scope就是父controller的scope。
+    	【2】elem – 指令的jQLite(jQuery的子集)包装DOM元素。如果你在引入AngularJS之前引入了jQuery，那么这个元素就是jQuery元素，而不是jQLite元素。由于这个元素已经被jQuery/	jQLite包装了，所以我们就在进行DOM操作的时候就不需要再使用 $()来进行包装。
+    	【3】attrs – 一个包含了指令所在元素的属性的标准化的参数对象。举个例子，你给一个HTML元素添加了一些属性：，那么可以在 link 函数中通过 attrs.someAttribute 来使用它。*/
+
+	</script>
+</body>
+</html>
